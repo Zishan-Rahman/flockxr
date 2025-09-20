@@ -750,6 +750,7 @@ export default {
   keyboard_play_ui: "Play",
   keyboard_gizmos_ui: "Go to gizmos",
   keyboard_navigation_ui: "Go to browser navigation bar (overridden shortcuts work from here)",
+  mesh_focus_ui: "Focus camera on selected mesh from block or canvas selection",
 
   // Context menu option translations
   export_JSON_snippet: "Export block as JSON snippet",
