@@ -199,7 +199,7 @@ export default {
   scale: "scale %1 x: %2 y: %3 z: %4\norigin x: %5 y: %6 z: %7",
   resize: "resize %1 x: %2 y: %3 z: %4\norigin x: %5 y: %6 z: %7",
   rotate_model_xyz: "rotate %1 by x: %2 y: %3 z: %4",
-  rotate_to: "rotate %1 to x: %2 y: %3 z: %4",
+  rotate_to: "set rotation of %1 x: %2 y: %3 z: %4",
   look_at: "look %1 at %2 y? %3",
   move_forward: "move %1 %2 speed %3",
   set_pivot: "set pivot of %1 x: %2 y: %3 z: %4",
