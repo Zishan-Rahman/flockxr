@@ -152,9 +152,9 @@ export default {
   glide_to_object:
     "scivola %1 verso %2 in %6 secondi\noffset x: %3 y: %4 z: %5\n%7 ritorna? %8 ripeti? %9 %10",
   rotate_anim:
-    "ruota %1 a x %2 y %3 z %4 in %5 ms\n%6 inverti? %7 ripeti? %8  %9",
+    "ruota %1 a x %2 y %3 z %4 in %5 ms\n%6 inverti? %7 ripeti? %8  %9 %10",
   rotate_anim_seconds:
-    "ruota %1 a x %2 y %3 z %4 in %5 secondi\n%6 inverti? %7 ripeti? %8  %9",
+    "ruota %1 a x %2 y %3 z %4 in %5 secondi\n%6 inverti? %7 ripeti? %8  %9 %10",
   animate_property: "anima %1 %2 a %3 in %4 ms inverti? %5 ripeti? %6 %7",
   colour_keyframe: "a %1 colore: %2",
   number_keyframe: "a: %1 valore: %2",

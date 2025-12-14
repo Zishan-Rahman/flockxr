@@ -147,9 +147,9 @@ export default {
       glide_to_object:
             "glid %1 till %2 på %6 sekunder\nförskjutning x: %3 y: %4 z: %5\n%7 återvända? %8 loop? %9 %10",
       rotate_anim:
-            "rotera %1 till x %2 y %3 z %4 på %5 ms\n%6 omvänd? %7 loop? %8  %9",
+            "rotera %1 till x %2 y %3 z %4 på %5 ms\n%6 omvänd? %7 loop? %8 %9 %10",
       rotate_anim_seconds:
-            "rotera %1 till x %2 y %3 z %4 på %5 sekunder\n%6 omvänd? %7 loop? %8  %9",
+            "rotera %1 till x %2 y %3 z %4 på %5 sekunder\n%6 omvänd? %7 loop? %8 %9 %10",
       animate_property:
             "animerar %1 %2 till %3 på %4 ms omvänd? %5 loop? %6 %7",
       colour_keyframe: "vid %1 färg: %2",

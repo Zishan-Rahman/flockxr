@@ -13,6 +13,15 @@ import {
         getDropdownOption,
 } from "../main/translation.js";
 
+const directionDropdown = {
+        type: "field_dropdown",
+        name: "DIRECTION",
+        options: [
+                ["↻", "Clockwise"],
+                ["↺", "Anticlockwise"],
+        ],
+}
+
 export function defineAnimateBlocks() {
         Blockly.Blocks["glide_to"] = {
                 init: function () {
@@ -327,6 +336,7 @@ export function defineAnimateBlocks() {
                                                         getDropdownOption("BackEase"),
                                                 ],
                                         },
+                                        directionDropdown,
                                 ],
                                 previousStatement: null,
                                 nextStatement: null,
@@ -403,6 +413,7 @@ export function defineAnimateBlocks() {
                                                         getDropdownOption("BackEase"),
                                                 ],
                                         },
+                                        directionDropdown,
                                 ],
                                 previousStatement: null,
                                 nextStatement: null,
