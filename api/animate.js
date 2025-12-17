@@ -59,6 +59,7 @@ export const flockAnimate = {
       reverse = false,
       loop = false,
       easing = "Linear",
+      direction = "Clockwise",
     } = {},
   ) {
     return new Promise(async (resolve) => {

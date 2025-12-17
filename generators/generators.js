@@ -281,10 +281,11 @@ export function defineGenerators() {
                 const reverse = block.getFieldValue("REVERSE") === "TRUE";
                 const loop = block.getFieldValue("LOOP") === "TRUE";
                 const easing = block.getFieldValue("EASING");
+                const direction = block.getFieldValue("DIRECTION");
 
                 const asyncWrapper = mode === "AWAIT" ? "await " : "";
 
-                return `${asyncWrapper}rotateAnim(${meshName}, { x: ${rotX}, y: ${rotY}, z: ${rotZ}, duration: ${duration}, reverse: ${reverse}, loop: ${loop}, easing: "${easing}" });\n`;
+                return `${asyncWrapper}rotateAnim(${meshName}, { x: ${rotX}, y: ${rotY}, z: ${rotZ}, duration: ${duration}, reverse: ${reverse}, loop: ${loop}, easing: "${easing}", direction: "${direction}" });\n`;
         };
 
         javascriptGenerator.forBlock["rotate_anim_seconds"] = function (block) {
@@ -300,10 +301,11 @@ export function defineGenerators() {
                 const reverse = block.getFieldValue("REVERSE") === "TRUE";
                 const loop = block.getFieldValue("LOOP") === "TRUE";
                 const easing = block.getFieldValue("EASING");
+                const direction = block.getFieldValue("DIRECTION");
 
                 const asyncWrapper = mode === "AWAIT" ? "await " : "";
 
-                return `${asyncWrapper}rotateAnim(${meshName}, { x: ${rotX}, y: ${rotY}, z: ${rotZ}, duration: ${duration}, reverse: ${reverse}, loop: ${loop}, easing: "${easing}" });\n`;
+                return `${asyncWrapper}rotateAnim(${meshName}, { x: ${rotX}, y: ${rotY}, z: ${rotZ}, duration: ${duration}, reverse: ${reverse}, loop: ${loop}, easing: "${easing}", direction: "${direction}" });\n`;
         };
 
         javascriptGenerator.forBlock["animation"] = function (block) {
