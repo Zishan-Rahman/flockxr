@@ -134,7 +134,7 @@
   --color-focus-ring:                #ffb700;
 
   /* Buttons */
-  --color-button-bg:                 var(--color-bg-alt);
+  --color-button-bg:                 #090909;
   --color-button-bg-hover:           #333333;
   --color-button-bg-focus:           #444444;
   --color-button-scroll:             rgba(205, 205, 205, 0.5);
