@@ -11,6 +11,8 @@ import {
         handleBlockSelect,
         handleBlockDelete,
         CustomZelosRenderer,
+        initializeVariableIndexes,
+        nextVariableIndexes,
 } from "../blocks/blocks";
 import { defineBaseBlocks } from "../blocks/base";
 import { defineShapeBlocks } from "../blocks/shapes";
@@ -490,90 +492,200 @@ export function createBlocklyWorkspace() {
 
         KeyboardNavigation.registerKeyboardNavigationStyles();
 
+        // Manually create a navigation-deferring toolbox
+        class NavigationDeferringToolbox extends Blockly.Toolbox {
+            onKeyDown_(e) {
+                return false; // Defer to keyboard navigation plugin
+            }
+        }
+
+        // Register it before inject
+        Blockly.registry.unregister(Blockly.registry.Type.TOOLBOX, Blockly.registry.DEFAULT);
+        Blockly.registry.register(
+            Blockly.registry.Type.TOOLBOX,
+            Blockly.registry.DEFAULT,
+            NavigationDeferringToolbox
+        );
+
         workspace = Blockly.inject("blocklyDiv", options);
-        initializeIfClauseConnectionChecker(workspace);
 
-        // --- Blockly search flyout accessibility fix ---
-        // Makes the visible search flyout tabbable and allows Tab/↓ from the search input to reach it.
+        // Add a global keydown listener to see what's happening
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                console.log('[global] ArrowDown event');
+                console.log('[global] Target:', e.target);
+                console.log('[global] Active element:', document.activeElement);
+                console.trace('[global] Stack trace');
+            }
+        }, true);
 
-        (function enableBlocklySearchFlyoutTabbing() {
-                // 1) Blockly's injection area (always exists when workspace is loaded)
-                const root = document.getElementById("blocklyDiv");
-                if (!root) return;
+        // Initialize keyboard navigation
+        const keyboardNav = new KeyboardNavigation(workspace);
+        console.log('[init] KeyboardNav created:', keyboardNav);
 
-                // 2) Helper to find visible search flyout (the one with actual results)
-                function getVisibleFlyout() {
-                        const flyouts = root.querySelectorAll(
-                                "svg.blocklyToolboxFlyout",
-                        );
-                        return (
-                                Array.from(flyouts).find((svg) => {
-                                        const r = svg.getBoundingClientRect();
-                                        return r.width > 0 && r.height > 0;
-                                }) || null
-                        );
-                }
+        // Monkey-patch
+        const toolbox = workspace.getToolbox();
+        toolbox.onKeyDown_ = function(e) {
+            console.log('[toolbox] onKeyDown_ called');
+            return false;
+        };
 
-                // 3) Make the flyout focusable
-                function ensureFlyoutFocusable() {
-                        const flyout = getVisibleFlyout();
-                        if (!flyout) return null;
+        (function wireToolboxKeyboardOverrides() {
+                if (!toolbox) return;
+                const toolboxDiv =
+                        toolbox.HtmlDiv ||
+                        document.querySelector(".blocklyToolboxDiv");
+                if (!toolboxDiv) return;
 
-                        const ws = flyout.querySelector("g.blocklyWorkspace");
-                        const target = ws || flyout;
-
-                        // Ensure focusability
-                        target.setAttribute("tabindex", "0");
-                        target.setAttribute("focusable", "true");
-                        target.setAttribute("role", "group");
-                        target.setAttribute(
-                                "aria-label",
-                                translate("toolbox_search_results_aria"),
-                        );
-
-                        return target;
-                }
-
-                // 4) Jump from search input → flyout
-                function wireSearchInput() {
-                        const search = root.querySelector(
-                                '.blocklyToolbox input[type="search"]',
-                        );
-                        if (!search) return;
-
-                        // Blockly sets tabindex="-1" by default — fix that
-                        if (search.tabIndex < 0) search.tabIndex = 0;
-
-                        search.addEventListener("keydown", (e) => {
+                toolboxDiv.addEventListener(
+                        "keydown",
+                        (e) => {
+                                const target = e.target;
                                 if (
-                                        (e.key === "Tab" && !e.shiftKey) ||
-                                        e.key === "ArrowDown"
+                                        target &&
+                                        (target.tagName === "INPUT" ||
+                                                target.tagName === "TEXTAREA" ||
+                                                target.isContentEditable)
                                 ) {
-                                        const target = ensureFlyoutFocusable();
-                                        if (!target) return;
+                                        return;
+                                }
+
+                                const flyout = toolbox.getFlyout?.();
+                                const flyoutVisible =
+                                        !!flyout && !!flyout.isVisible?.();
+
+                                if (e.key === "ArrowRight" && flyoutVisible) {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        try {
-                                                target.focus({
-                                                        preventScroll: true,
-                                                });
-                                        } catch {}
+                                        e.stopImmediatePropagation();
+                                        const flyoutWorkspace =
+                                                flyout.getWorkspace?.();
+                                        if (flyoutWorkspace) {
+                                                Blockly.getFocusManager().focusTree(
+                                                        flyoutWorkspace,
+                                                );
+                                        }
+                                        return;
                                 }
-                        });
-                }
 
-                // 5) Keep it alive while Blockly updates dynamically
-                const observer = new MutationObserver(() =>
-                        ensureFlyoutFocusable(),
+                                if (
+                                        e.key === "Enter" ||
+                                        e.key === " " ||
+                                        e.key === "Spacebar"
+                                ) {
+                                        const selectedItem =
+                                                toolbox.getSelectedItem?.();
+                                        if (
+                                                selectedItem &&
+                                                typeof selectedItem.toggleExpanded ===
+                                                        "function"
+                                        ) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                e.stopImmediatePropagation();
+                                                selectedItem.toggleExpanded();
+                                        }
+                                }
+                        },
+                        true,
                 );
-                observer.observe(root, { childList: true, subtree: true });
-
-                // Initial setup
-                wireSearchInput();
-                ensureFlyoutFocusable();
         })();
 
-        const keyboardNav = new KeyboardNavigation(workspace);
+        initializeIfClauseConnectionChecker(workspace);
+
+        (function wireToolboxSearchArrowDown() {
+                const host = workspace.getInjectionDiv?.() || document;
+                if (!host) {
+                        // console.log("[search-arrow] no host, abort");
+                        return;
+                }
+                //console.log("[search-arrow] attaching listener on host", host);
+
+                host.addEventListener(
+                        "keydown",
+                        (e) => {
+                                const t = e.target;
+                                if (!t || t.tagName !== "INPUT") return;
+                                if (t.type !== "search") return;
+                                if (e.key !== "ArrowDown") return;
+
+                                //console.log("[search-arrow] ArrowDown on search input");
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+
+                                const toolboxDiv =
+                                        document.querySelector(
+                                                ".blocklyToolbox",
+                                        ) ||
+                                        host.querySelector(".blocklyToolbox") ||
+                                        t.closest(".blocklyToolbox");
+
+                                if (toolboxDiv) {
+                                        t.blur();
+                                        toolboxDiv.focus();
+
+                                        setTimeout(() => {
+                                                const arrowEvent =
+                                                        new KeyboardEvent(
+                                                                "keydown",
+                                                                {
+                                                                        key: "ArrowDown",
+                                                                        keyCode: 40,
+                                                                        code: "ArrowDown",
+                                                                        bubbles: true,
+                                                                        cancelable: true,
+                                                                },
+                                                        );
+                                                toolboxDiv.dispatchEvent(
+                                                        arrowEvent,
+                                                );
+                                        }, 10);
+                                }
+                        },
+                        true,
+                );
+        })();
+
+        (function preventToolboxShortcutTextEntry() {
+                const shortcutRegistry = Blockly.ShortcutRegistry.registry;
+                const registry = shortcutRegistry.getRegistry?.();
+                const toolboxShortcut = registry?.toolbox;
+
+                if (!toolboxShortcut) {
+                        return;
+                }
+
+                const wrappedShortcut = {
+                        ...toolboxShortcut,
+                        callback: (ws, event, shortcut, scope) => {
+                                const keyboardEvent =
+                                        event instanceof KeyboardEvent
+                                                ? event
+                                                : null;
+                                if (
+                                        keyboardEvent &&
+                                        (
+                                                keyboardEvent.key || ""
+                                        ).toLowerCase() === "t"
+                                ) {
+                                        keyboardEvent.preventDefault();
+                                }
+
+                                return toolboxShortcut.callback
+                                        ? toolboxShortcut.callback(
+                                                  ws,
+                                                  event,
+                                                  shortcut,
+                                                  scope,
+                                          )
+                                        : false;
+                        },
+                };
+
+                shortcutRegistry.removeAllKeyMappings?.("toolbox");
+                shortcutRegistry.register(wrappedShortcut, true);
+        })();
 
         // Keep scrolling; remove only the obvious flyout-width bump.
         (function simpleNoBumpTranslate() {
@@ -1212,46 +1324,45 @@ function setupAutoValueBehavior(workspace) {
 export function overrideSearchPlugin(workspace) {
         function getBlocksFromToolbox(workspace) {
                 const toolboxBlocks = [];
-                const seenTypes = new Set(); // Track which block types we've already added
+                const seenTypes = new Set();
 
-                function processItem(item, categoryName = "") {
-                        const currentCategory = item.getName
-                                ? item.getName()
-                                : categoryName;
-
-                        if (currentCategory === "Snippets") {
+                function collectBlocks(schema, categoryName = "") {
+                        if (!schema) {
                                 return;
                         }
 
-                        if (item.getContents) {
-                                const contents = item.getContents();
-                                const blocks = Array.isArray(contents)
-                                        ? contents
-                                        : [contents];
+                        if ("contents" in schema) {
+                                const currentCategory =
+                                        schema.name || categoryName;
+                                if (currentCategory === "Snippets") {
+                                        return;
+                                }
 
-                                blocks.forEach((block) => {
-                                        if (
-                                                block.kind === "block" &&
-                                                !seenTypes.has(block.type)
-                                        ) {
-                                                seenTypes.add(block.type);
-                                                toolboxBlocks.push({
-                                                        type: block.type,
-                                                        text: block.type,
-                                                        full: block,
-                                                });
-                                        }
+                                schema.contents?.forEach((item) => {
+                                        collectBlocks(item, currentCategory);
                                 });
+                                return;
                         }
 
-                        if (item.getChildToolboxItems) {
-                                item.getChildToolboxItems().forEach((child) => {
-                                        processItem(child, currentCategory);
+                        if (
+                                schema.kind?.toLowerCase() === "block" &&
+                                schema.type &&
+                                !seenTypes.has(schema.type)
+                        ) {
+                                seenTypes.add(schema.type);
+                                toolboxBlocks.push({
+                                        type: schema.type,
+                                        text: schema.type,
+                                        full: schema,
+                                        keyword: schema.keyword,
                                 });
                         }
                 }
 
-                workspace.getToolbox().getToolboxItems().forEach(processItem);
+                workspace.options.languageTree?.contents?.forEach((item) => {
+                        collectBlocks(item);
+                });
+
                 return toolboxBlocks;
         }
 
@@ -1265,33 +1376,496 @@ export function overrideSearchPlugin(workspace) {
                 return;
         }
 
-        const toolboxBlocks = getBlocksFromToolbox(workspace);
+        const originalInitBlockSearcher =
+                SearchCategory.prototype.initBlockSearcher;
+
         SearchCategory.prototype.initBlockSearcher = function () {
-                this.blockSearcher.indexBlocks = function () {
-                        this.indexedBlocks_ = toolboxBlocks;
+                // Let the official plugin initialize its own behaviour first.
+                if (typeof originalInitBlockSearcher === "function") {
+                        originalInitBlockSearcher.call(this);
+                }
+
+                const blockSearcher = this.blockSearcher;
+
+                const rebuildSearchIndex = () => {
+                        const cachedIndex = workspace.flockSearchIndexedBlocks;
+                        if (Array.isArray(cachedIndex)) {
+                                blockSearcher.indexedBlocks_ = cachedIndex;
+                                return;
+                        }
+
+                        const newIndex = buildSearchIndex();
+                        workspace.flockSearchIndexedBlocks = newIndex;
+                        blockSearcher.indexedBlocks_ = newIndex;
+
+                        const searchCategory = workspace.flockSearchCategory;
+                        if (searchCategory) {
+                                const showAllBlocksAsync = () => {
+                                        if (
+                                                !isSearchCategorySelected(
+                                                        searchCategory,
+                                                )
+                                        )
+                                                return;
+                                        if (
+                                                searchCategory.searchField?.value
+                                                        .toLowerCase()
+                                                        .trim()
+                                        ) {
+                                                return;
+                                        }
+                                        searchCategory.showMatchingBlocks(
+                                                newIndex,
+                                        );
+                                };
+
+                                if (typeof requestIdleCallback === "function") {
+                                        requestIdleCallback(showAllBlocksAsync);
+                                } else {
+                                        setTimeout(showAllBlocksAsync, 0);
+                                }
+                        }
                 };
-                this.blockSearcher.indexBlocks();
+
+                this.blockSearcher.indexBlocks = rebuildSearchIndex;
+                blockSearcher.indexedBlocks_ =
+                        workspace.flockSearchIndexedBlocks || null;
+
+                if (!workspace.flockSearchIndexScheduled) {
+                        workspace.flockSearchIndexScheduled = true;
+                        const scheduleBuild = () => {
+                                workspace.flockSearchIndexScheduled = false;
+                                if (!workspace.flockSearchIndexedBlocks) {
+                                        rebuildSearchIndex();
+                                }
+                        };
+
+                        if (typeof requestIdleCallback === "function") {
+                                requestIdleCallback(scheduleBuild, {
+                                        timeout: 1000,
+                                });
+                        } else {
+                                setTimeout(scheduleBuild, 0);
+                        }
+                }
+
+                // Keep a reference so other helpers can see the active search category.
+                workspace.flockSearchCategory = this;
         };
+
+        const toolboxBlocks = getBlocksFromToolbox(workspace);
+        const isSearchCategorySelected = (category = null) => {
+                const toolbox = workspace.getToolbox?.();
+                const selectedItem = toolbox?.getSelectedItem?.();
+                const selectedDef =
+                        selectedItem?.getToolboxItemDef?.() ||
+                        selectedItem?.toolboxItemDef;
+                const isSelectedSearch =
+                        selectedDef?.kind === "search" ||
+                        (category && selectedItem === category);
+
+                return isSelectedSearch;
+        };
+
+        function getBlockMessage(blockType) {
+                const definition = Blockly.Blocks?.[blockType];
+                if (!definition) {
+                        return "";
+                }
+
+                const message0 =
+                        (typeof definition.message0 === "string" &&
+                                definition.message0) ||
+                        (typeof definition.json?.message0 === "string" &&
+                                definition.json.message0) ||
+                        "";
+
+                if (!message0) {
+                        return "";
+                }
+
+                const resolvedMessage =
+                        Blockly.utils.replaceMessageReferences(message0);
+                return translate(resolvedMessage);
+        }
+
+        function buildSearchIndex() {
+                const startTime =
+                        typeof performance !== "undefined" &&
+                        typeof performance.now === "function"
+                                ? performance.now()
+                                : Date.now();
+                if (!Object.keys(nextVariableIndexes).length) {
+                        initializeVariableIndexes();
+                }
+
+                const blockCreationWorkspace = new Blockly.Workspace();
+                const indexedBlocks = [];
+
+                function applyFieldValues(block, fieldValues) {
+                        if (!block || !fieldValues) {
+                                return;
+                        }
+
+                        Object.entries(fieldValues).forEach(
+                                ([fieldName, value]) => {
+                                        if (
+                                                value === undefined ||
+                                                value === null ||
+                                                !block.getField(fieldName)
+                                        ) {
+                                                return;
+                                        }
+
+                                        const normalizedValue =
+                                                typeof value === "string"
+                                                        ? value
+                                                        : String(value);
+                                        block.setFieldValue(
+                                                normalizedValue,
+                                                fieldName,
+                                        );
+                                },
+                        );
+                }
+
+                function addBlockFieldTerms(
+                        block,
+                        searchTerms,
+                        runDebugFields,
+                ) {
+                        block.inputList.forEach((input) => {
+                                input.fieldRow.forEach((field) => {
+                                        const fieldText = field.getText();
+                                        if (fieldText) {
+                                                searchTerms.add(fieldText);
+                                                runDebugFields.push({
+                                                        name: field.name,
+                                                        text: fieldText,
+                                                        kind: field.constructor
+                                                                ?.name,
+                                                });
+                                        }
+
+                                        if (
+                                                field instanceof
+                                                Blockly.FieldVariable
+                                        ) {
+                                                return;
+                                        }
+
+                                        if (
+                                                !fieldText &&
+                                                typeof field.getValue ===
+                                                        "function"
+                                        ) {
+                                                const fieldValue =
+                                                        field.getValue();
+                                                if (
+                                                        typeof fieldValue ===
+                                                                "string" &&
+                                                        fieldValue.trim()
+                                                ) {
+                                                        searchTerms.add(
+                                                                fieldValue,
+                                                        );
+                                                        runDebugFields.push({
+                                                                name: field.name,
+                                                                value: fieldValue,
+                                                                kind: field
+                                                                        .constructor
+                                                                        ?.name,
+                                                        });
+                                                }
+                                        }
+
+                                        if (
+                                                field instanceof
+                                                Blockly.FieldDropdown
+                                        ) {
+                                                field.getOptions(true).forEach(
+                                                        (option) => {
+                                                                if (
+                                                                        typeof option[0] ===
+                                                                        "string"
+                                                                ) {
+                                                                        searchTerms.add(
+                                                                                option[0],
+                                                                        );
+                                                                        runDebugFields.push(
+                                                                                {
+                                                                                        name: field.name,
+                                                                                        option: option[0],
+                                                                                        kind: field
+                                                                                                .constructor
+                                                                                                ?.name,
+                                                                                },
+                                                                        );
+                                                                } else if (
+                                                                        "alt" in
+                                                                        option[0]
+                                                                ) {
+                                                                        searchTerms.add(
+                                                                                option[0]
+                                                                                        .alt,
+                                                                        );
+                                                                        runDebugFields.push(
+                                                                                {
+                                                                                        name: field.name,
+                                                                                        option: option[0]
+                                                                                                .alt,
+                                                                                        kind: field
+                                                                                                .constructor
+                                                                                                ?.name,
+                                                                                },
+                                                                        );
+                                                                }
+                                                        },
+                                                );
+                                        }
+                                });
+                        });
+                }
+
+                try {
+                        toolboxBlocks.forEach((blockInfo) => {
+                                const type = blockInfo.type;
+                                if (!type || type === "") {
+                                        return;
+                                }
+
+                                const searchTerms = new Set();
+                                searchTerms.add(type.replaceAll("_", " "));
+
+                                const runDebugFields = [];
+
+                                const keyword =
+                                        blockInfo.keyword ||
+                                        blockInfo.full?.keyword;
+                                if (keyword) {
+                                        searchTerms.add(keyword);
+                                }
+
+                                const block =
+                                        blockCreationWorkspace.newBlock(type);
+                                applyFieldValues(block, blockInfo.full?.fields);
+
+                                const labelText =
+                                        typeof block.toString === "function"
+                                                ? block.toString()
+                                                : "";
+
+                                if (labelText && labelText.trim()) {
+                                        searchTerms.add(labelText);
+                                } else {
+                                        const fallbackMessage =
+                                                getBlockMessage(type);
+                                        if (fallbackMessage) {
+                                                searchTerms.add(
+                                                        fallbackMessage,
+                                                );
+                                        }
+                                }
+
+                                addBlockFieldTerms(
+                                        block,
+                                        searchTerms,
+                                        runDebugFields,
+                                );
+
+                                const inputDefinitions = blockInfo.full?.inputs;
+                                if (inputDefinitions) {
+                                        Object.values(inputDefinitions).forEach(
+                                                (definition) => {
+                                                        const shadowType =
+                                                                definition
+                                                                        ?.shadow
+                                                                        ?.type;
+                                                        if (!shadowType) {
+                                                                return;
+                                                        }
+
+                                                        const shadowBlock =
+                                                                blockCreationWorkspace.newBlock(
+                                                                        shadowType,
+                                                                );
+                                                        applyFieldValues(
+                                                                shadowBlock,
+                                                                definition
+                                                                        ?.shadow
+                                                                        ?.fields,
+                                                        );
+                                                        addBlockFieldTerms(
+                                                                shadowBlock,
+                                                                searchTerms,
+                                                                runDebugFields,
+                                                        );
+                                                        shadowBlock.dispose(
+                                                                true,
+                                                        );
+                                                },
+                                        );
+                                }
+
+                                indexedBlocks.push({
+                                        ...blockInfo,
+                                        text: Array.from(searchTerms).join(" "),
+                                });
+                        });
+                } finally {
+                        blockCreationWorkspace.dispose();
+                }
+
+                const endTime =
+                        typeof performance !== "undefined" &&
+                        typeof performance.now === "function"
+                                ? performance.now()
+                                : Date.now();
+                return indexedBlocks;
+        }
+
+        const searchToolboxItem = workspace
+                .getToolbox()
+                ?.getToolboxItems?.()
+                ?.find(
+                        (item) =>
+                                item instanceof SearchCategory ||
+                                item.getToolboxItemDef?.().kind === "search" ||
+                                item.toolboxItemDef?.kind === "search",
+                );
+
+        if (searchToolboxItem?.initBlockSearcher) {
+                searchToolboxItem.initBlockSearcher();
+        }
 
         SearchCategory.prototype.matchBlocks = function () {
                 if (!this.hasInputStarted) {
                         this.hasInputStarted = true;
-                        return;
                 }
 
                 const query =
                         this.searchField?.value.toLowerCase().trim() || "";
 
-                const matches = this.blockSearcher.indexedBlocks_.filter(
-                        (block) => {
-                                if (block.text) {
-                                        return block.text
-                                                .toLowerCase()
-                                                .includes(query);
+                if (!query) {
+                        const showAllBlocksAsync = () => {
+                                if (!isSearchCategorySelected(this)) {
+                                        return;
                                 }
-                                return false;
-                        },
-                );
+                                if (
+                                        !Array.isArray(
+                                                this.blockSearcher
+                                                        .indexedBlocks_,
+                                        )
+                                ) {
+                                        return;
+                                }
+
+                                if (
+                                        this.searchField?.value
+                                                .toLowerCase()
+                                                .trim()
+                                ) {
+                                        return;
+                                }
+
+                                this.showMatchingBlocks(
+                                        this.blockSearcher.indexedBlocks_,
+                                );
+                        };
+
+                        const requestType =
+                                this.flockSearchAllBlocksRequest?.type;
+                        const requestId = this.flockSearchAllBlocksRequest?.id;
+                        if (
+                                requestType === "idle" &&
+                                typeof cancelIdleCallback === "function" &&
+                                typeof requestId === "number"
+                        ) {
+                                cancelIdleCallback(requestId);
+                        } else if (
+                                requestType === "timeout" &&
+                                typeof requestId === "number"
+                        ) {
+                                clearTimeout(requestId);
+                        }
+
+                        if (
+                                !Array.isArray(
+                                        this.blockSearcher.indexedBlocks_,
+                                ) &&
+                                this.blockSearcher.indexBlocks
+                        ) {
+                                if (typeof requestIdleCallback === "function") {
+                                        const idleId = requestIdleCallback(
+                                                () => {
+                                                        this.blockSearcher.indexBlocks();
+                                                        showAllBlocksAsync();
+                                                },
+                                        );
+                                        this.flockSearchAllBlocksRequest = {
+                                                type: "idle",
+                                                id: idleId,
+                                        };
+                                } else {
+                                        const timeoutId = setTimeout(() => {
+                                                this.blockSearcher.indexBlocks();
+                                                showAllBlocksAsync();
+                                        }, 0);
+                                        this.flockSearchAllBlocksRequest = {
+                                                type: "timeout",
+                                                id: timeoutId,
+                                        };
+                                }
+                        } else if (typeof requestIdleCallback === "function") {
+                                const idleId =
+                                        requestIdleCallback(showAllBlocksAsync);
+                                this.flockSearchAllBlocksRequest = {
+                                        type: "idle",
+                                        id: idleId,
+                                };
+                        } else {
+                                const timeoutId = setTimeout(
+                                        showAllBlocksAsync,
+                                        0,
+                                );
+                                this.flockSearchAllBlocksRequest = {
+                                        type: "timeout",
+                                        id: timeoutId,
+                                };
+                        }
+                        return;
+                }
+
+                if (this.flockSearchAllBlocksRequest?.type === "idle") {
+                        if (typeof cancelIdleCallback === "function") {
+                                cancelIdleCallback(
+                                        this.flockSearchAllBlocksRequest.id,
+                                );
+                        }
+                } else if (
+                        this.flockSearchAllBlocksRequest?.type === "timeout"
+                ) {
+                        clearTimeout(this.flockSearchAllBlocksRequest.id);
+                }
+
+                if (!Array.isArray(this.blockSearcher.indexedBlocks_)) {
+                        if (this.blockSearcher.indexBlocks) {
+                                this.blockSearcher.indexBlocks();
+                        }
+                }
+
+                const indexedBlocks = Array.isArray(
+                        this.blockSearcher.indexedBlocks_,
+                )
+                        ? this.blockSearcher.indexedBlocks_
+                        : [];
+
+                const matches = indexedBlocks.filter((block) => {
+                        if (block.text) {
+                                return block.text.toLowerCase().includes(query);
+                        }
+                        return false;
+                });
 
                 this.showMatchingBlocks(matches);
         };
@@ -1375,6 +1949,9 @@ export function overrideSearchPlugin(workspace) {
         }
 
         SearchCategory.prototype.showMatchingBlocks = function (matches) {
+                if (!isSearchCategorySelected(this)) {
+                        return;
+                }
                 const flyout = this.workspace_.getToolbox().getFlyout();
                 if (!flyout) {
                         console.error("Flyout not found!");
@@ -1419,7 +1996,7 @@ export function initBlocklyPerfOverlay(
         panel.innerHTML = `
         <div style="font-weight:600;margin-bottom:6px;">Blockly Perf</div>
         <div style="display:grid;grid-template-columns:auto 1fr;gap:2px 8px;white-space:nowrap;">
-          <div>Blocks (all/top):</div><div id="bp_blocks">–</div>
+          <div>Blocks (all/top):</div><div id="bp_blocks">d��</div>
           <div>Rendered blocks:</div><div id="bp_rendered">–</div>
           <div>SVG nodes:</div><div id="bp_svg">–</div>
           <div>Events/sec:</div><div id="bp_eps">–</div>

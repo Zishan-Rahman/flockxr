@@ -283,15 +283,11 @@ export const flockSound = {
   ) {
     if (!context || context.state === "closed") return;
 
-    // Validate inputs to avoid scheduling non-finite AudioParam times
-    if (!isFinite(duration) || duration <= 0) {
-      duration = Math.max(0.001, Number(duration) || 0.001);
+    // Validate numeric parameters to prevent Web Audio API errors
+    if (!isFinite(duration) || !isFinite(playTime) || !isFinite(bpm)) {
+      console.warn('playMidiNote: Invalid parameters', { duration, playTime, bpm });
+      return;
     }
-    if (!isFinite(playTime)) {
-      playTime = context.currentTime + 0.01;
-    }
-    bpm = Number(bpm);
-    if (!isFinite(bpm) || bpm <= 0) bpm = 60;
 
     // Create a new oscillator for each note
     const osc = context.createOscillator();
@@ -994,3 +990,4 @@ export const flockSound = {
     };
   },
 };
+
