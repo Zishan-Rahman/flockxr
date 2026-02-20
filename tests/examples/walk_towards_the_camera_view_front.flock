@@ -1,0 +1,698 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "start",
+        "id": ",9l9u2Vy$V*Ty$6.2XS9",
+        "x": 10,
+        "y": 10,
+        "inputs": {
+          "DO": {
+            "block": {
+              "type": "device_camera_background",
+              "id": "+3O6l97CliwpL8r}Fu^:",
+              "fields": {
+                "CAMERA": "user"
+              },
+              "next": {
+                "block": {
+                  "type": "create_map",
+                  "id": "1++S4rq(TjWw)uS:)v`Z",
+                  "fields": {
+                    "MAP_NAME": "NONE"
+                  },
+                  "inputs": {
+                    "MATERIAL": {
+                      "shadow": {
+                        "type": "material",
+                        "id": "wto@}::oCxF8{~mqs(w;",
+                        "fields": {
+                          "TEXTURE_SET": "none.png"
+                        },
+                        "inputs": {
+                          "BASE_COLOR": {
+                            "shadow": {
+                              "type": "colour",
+                              "id": "3]*!F^R[DkCe3c2_eL1w",
+                              "fields": {
+                                "COLOR": "#71bc78"
+                              }
+                            }
+                          },
+                          "ALPHA": {
+                            "shadow": {
+                              "type": "math_number",
+                              "id": "AE?O~a80em:kEIWFrR3)",
+                              "fields": {
+                                "NUM": 1
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "block": {
+                        "type": "material",
+                        "id": "wto@}::oCxF8{~mqs(w;",
+                        "fields": {
+                          "TEXTURE_SET": "none.png"
+                        },
+                        "inputs": {
+                          "BASE_COLOR": {
+                            "shadow": {
+                              "type": "colour",
+                              "id": "3]*!F^R[DkCe3c2_eL1w",
+                              "fields": {
+                                "COLOR": "#71bc78"
+                              }
+                            }
+                          },
+                          "ALPHA": {
+                            "shadow": {
+                              "type": "math_number",
+                              "id": "AE?O~a80em:kEIWFrR3)",
+                              "fields": {
+                                "NUM": 0.5
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "print_text",
+                      "id": "f]#?SB*g_sLzm2/aA5cH",
+                      "inputs": {
+                        "TEXT": {
+                          "shadow": {
+                            "type": "text",
+                            "id": "rEPiw]sU`*P|o1$:ZeGd",
+                            "fields": {
+                              "TEXT": "You may want to check the settings in your browser to make sure you can use your camera"
+                            }
+                          }
+                        },
+                        "DURATION": {
+                          "shadow": {
+                            "type": "math_number",
+                            "id": ",$WFHP5)J2csMuJwo*q6",
+                            "fields": {
+                              "NUM": 30
+                            }
+                          }
+                        },
+                        "COLOR": {
+                          "shadow": {
+                            "type": "colour",
+                            "id": "uuhYqa[d}*Em?D(nh|T)",
+                            "fields": {
+                              "COLOR": "#000080"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "start",
+        "id": "]U~Qo6)Fpr88E+50LDSo",
+        "x": 10,
+        "y": 318,
+        "inputs": {
+          "DO": {
+            "block": {
+              "type": "load_character",
+              "id": "Wx_dC=c2JuUf@kuFfEy`",
+              "extraState": "<mutation xmlns=\"http://www.w3.org/1999/xhtml\" has_do=\"false\"></mutation>",
+              "fields": {
+                "ID_VAR": {
+                  "id": "b*7H|s;OBc8_^v`1`cb3"
+                },
+                "MODELS": "Block3.glb"
+              },
+              "inputs": {
+                "SCALE": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "Mi[!AT5`KXBA_Oq_srr1",
+                    "fields": {
+                      "NUM": 1
+                    }
+                  }
+                },
+                "X": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "+z8mc?i-IyQ7kikdXmP`",
+                    "fields": {
+                      "NUM": 0
+                    }
+                  }
+                },
+                "Y": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "v6z1Z;JYVcY!0CTTS?{,",
+                    "fields": {
+                      "NUM": 0
+                    }
+                  }
+                },
+                "Z": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "2K)],fSk.r=Ek~*Av:G%",
+                    "fields": {
+                      "NUM": 0
+                    }
+                  }
+                },
+                "HAIR_COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "eGj9H[%RCN_.TPpa+VqN",
+                    "fields": {
+                      "COLOR": "#000000"
+                    }
+                  }
+                },
+                "SKIN_COLOR": {
+                  "shadow": {
+                    "type": "skin_colour",
+                    "id": "8MY57(Fi}Ood7|Quk}9(",
+                    "fields": {
+                      "COLOR": "#a15c33"
+                    }
+                  }
+                },
+                "EYES_COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "Q.ldxsxD_~p,V#QpZ/?.",
+                    "fields": {
+                      "COLOR": "#000000"
+                    }
+                  }
+                },
+                "TSHIRT_COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "*NaW$J^$BW.Fv3m1*!pI",
+                    "fields": {
+                      "COLOR": "#ff8f60"
+                    }
+                  }
+                },
+                "SHORTS_COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "wS,u0B*pXJECajWAYaC+",
+                    "fields": {
+                      "COLOR": "#00008b"
+                    }
+                  }
+                },
+                "SLEEVES_COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "/.WHMhAF560m,`JM}D@9",
+                    "fields": {
+                      "COLOR": "#008b8b"
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "add_physics",
+                  "id": "I!,vB|J6n6xsOvJirJ1A",
+                  "fields": {
+                    "MODEL_VAR": {
+                      "id": "b*7H|s;OBc8_^v`1`cb3"
+                    },
+                    "PHYSICS_TYPE": "DYNAMIC"
+                  },
+                  "next": {
+                    "block": {
+                      "type": "camera_follow",
+                      "id": "xs8f7BAAiEmQ=w5mYG}]",
+                      "fields": {
+                        "MESH_VAR": {
+                          "id": "b*7H|s;OBc8_^v`1`cb3"
+                        },
+                        "FRONT": false
+                      },
+                      "inputs": {
+                        "RADIUS": {
+                          "block": {
+                            "type": "math_number",
+                            "id": "En/afCyF7a=Cf@1KM;h1",
+                            "fields": {
+                              "NUM": 7
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "forever",
+        "id": "TOVmikV{%x.YTe-$.,fL",
+        "x": 10,
+        "y": 654,
+        "extraState": "<mutation xmlns=\"http://www.w3.org/1999/xhtml\" inline=\"false\"></mutation>",
+        "inputs": {
+          "DO": {
+            "block": {
+              "type": "if_clause",
+              "id": "O?]v4SP$*(Z(XjhJysVy",
+              "extraState": {
+                "mode": "IF",
+                "stashedCondState": null
+              },
+              "fields": {
+                "MODE": "IF"
+              },
+              "inputs": {
+                "COND": {
+                  "block": {
+                    "type": "action_pressed",
+                    "id": "$:*$ey71i$Bdvoby;WvN",
+                    "fields": {
+                      "ACTION": "FORWARD"
+                    }
+                  }
+                },
+                "DO": {
+                  "block": {
+                    "type": "move_forward",
+                    "id": "9ZKnf`@P/hN2$Ua[C-5{",
+                    "fields": {
+                      "MODEL": {
+                        "id": "b*7H|s;OBc8_^v`1`cb3"
+                      },
+                      "DIRECTION": "forward"
+                    },
+                    "inputs": {
+                      "SPEED": {
+                        "shadow": {
+                          "type": "math_number",
+                          "id": "7/tU`SlTZObgtTUyo_G=",
+                          "fields": {
+                            "NUM": 3
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "switch_animation",
+                        "id": "%~p=GT7(Ric|T|AP(B~=",
+                        "fields": {
+                          "MODEL": {
+                            "id": "b*7H|s;OBc8_^v`1`cb3"
+                          }
+                        },
+                        "inputs": {
+                          "ANIMATION_NAME": {
+                            "shadow": {
+                              "type": "animation_name",
+                              "id": "C0xGJm~lrom0EC(N!)V/",
+                              "fields": {
+                                "ANIMATION_NAME": "Walk"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "if_clause",
+                  "id": "[]m^h`a9Cwa}%0SUvJ5,",
+                  "extraState": {
+                    "mode": "ELSEIF",
+                    "stashedCondState": null
+                  },
+                  "fields": {
+                    "MODE": "ELSEIF"
+                  },
+                  "inputs": {
+                    "COND": {
+                      "block": {
+                        "type": "action_pressed",
+                        "id": "_.%apG[s~1efUd~gavSl",
+                        "fields": {
+                          "ACTION": "BACKWARD"
+                        }
+                      }
+                    },
+                    "DO": {
+                      "block": {
+                        "type": "move_forward",
+                        "id": "dO)sUNK-`nOud`XdQz2b",
+                        "fields": {
+                          "MODEL": {
+                            "id": "b*7H|s;OBc8_^v`1`cb3"
+                          },
+                          "DIRECTION": "forward"
+                        },
+                        "inputs": {
+                          "SPEED": {
+                            "shadow": {
+                              "type": "math_number",
+                              "id": "a#wEM.]8t8fbeJHz%b/!",
+                              "fields": {
+                                "NUM": -3
+                              }
+                            }
+                          }
+                        },
+                        "next": {
+                          "block": {
+                            "type": "switch_animation",
+                            "id": ":J!?A$w)y[YsGLIP@}h5",
+                            "fields": {
+                              "MODEL": {
+                                "id": "b*7H|s;OBc8_^v`1`cb3"
+                              }
+                            },
+                            "inputs": {
+                              "ANIMATION_NAME": {
+                                "shadow": {
+                                  "type": "animation_name",
+                                  "id": "4*{a$[jg+.=?h1IQ+m04",
+                                  "fields": {
+                                    "ANIMATION_NAME": "Walk"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "if_clause",
+                      "id": "O1bIB50f4Mecwn#*_^|f",
+                      "extraState": {
+                        "mode": "ELSEIF",
+                        "stashedCondState": null
+                      },
+                      "fields": {
+                        "MODE": "ELSEIF"
+                      },
+                      "inputs": {
+                        "COND": {
+                          "block": {
+                            "type": "action_pressed",
+                            "id": "`s=,Bh~-sa)Gu_|em{{f",
+                            "fields": {
+                              "ACTION": "LEFT"
+                            }
+                          }
+                        },
+                        "DO": {
+                          "block": {
+                            "type": "move_forward",
+                            "id": "xT7E(,w(VDRlX+8xy/j~",
+                            "fields": {
+                              "MODEL": {
+                                "id": "b*7H|s;OBc8_^v`1`cb3"
+                              },
+                              "DIRECTION": "sideways"
+                            },
+                            "inputs": {
+                              "SPEED": {
+                                "shadow": {
+                                  "type": "math_number",
+                                  "id": "u`h2[k!HLJ~QpzUB$k{3",
+                                  "fields": {
+                                    "NUM": -3
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "switch_animation",
+                                "id": "qQRboN+h4,U{UM6uyl(X",
+                                "fields": {
+                                  "MODEL": {
+                                    "id": "b*7H|s;OBc8_^v`1`cb3"
+                                  }
+                                },
+                                "inputs": {
+                                  "ANIMATION_NAME": {
+                                    "shadow": {
+                                      "type": "animation_name",
+                                      "id": "{({Uu-g8lH2Yn66M.~0/",
+                                      "fields": {
+                                        "ANIMATION_NAME": "Walk"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "if_clause",
+                          "id": "?Rg2?`48#Z2nTvbu%yPS",
+                          "extraState": {
+                            "mode": "ELSEIF",
+                            "stashedCondState": null
+                          },
+                          "fields": {
+                            "MODE": "ELSEIF"
+                          },
+                          "inputs": {
+                            "COND": {
+                              "block": {
+                                "type": "action_pressed",
+                                "id": "5Lyp11D}_IH*t.kSY~fb",
+                                "fields": {
+                                  "ACTION": "RIGHT"
+                                }
+                              }
+                            },
+                            "DO": {
+                              "block": {
+                                "type": "move_forward",
+                                "id": "|?tUi@|6b1iG_QLtCn@4",
+                                "fields": {
+                                  "MODEL": {
+                                    "id": "b*7H|s;OBc8_^v`1`cb3"
+                                  },
+                                  "DIRECTION": "sideways"
+                                },
+                                "inputs": {
+                                  "SPEED": {
+                                    "shadow": {
+                                      "type": "math_number",
+                                      "id": "+G@[2yE]:C7CjV:T4i:R",
+                                      "fields": {
+                                        "NUM": 3
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "switch_animation",
+                                    "id": "])yA9~q97Fw4-Q8BQ)f6",
+                                    "fields": {
+                                      "MODEL": {
+                                        "id": "b*7H|s;OBc8_^v`1`cb3"
+                                      }
+                                    },
+                                    "inputs": {
+                                      "ANIMATION_NAME": {
+                                        "shadow": {
+                                          "type": "animation_name",
+                                          "id": "pGzC6)vsb_3/2)pEi^Ho",
+                                          "fields": {
+                                            "ANIMATION_NAME": "Walk"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "if_clause",
+                              "id": "a?.9(0=3UL:bFZOBPFgh",
+                              "extraState": {
+                                "mode": "ELSE",
+                                "stashedCondState": null
+                              },
+                              "fields": {
+                                "MODE": "ELSE"
+                              },
+                              "inputs": {
+                                "DO": {
+                                  "block": {
+                                    "type": "switch_animation",
+                                    "id": "Db72g:1O11!$GG!Nj9@8",
+                                    "fields": {
+                                      "MODEL": {
+                                        "id": "b*7H|s;OBc8_^v`1`cb3"
+                                      }
+                                    },
+                                    "inputs": {
+                                      "ANIMATION_NAME": {
+                                        "shadow": {
+                                          "type": "animation_name",
+                                          "id": "Uv/f|8nwP9hW,.Iv1,hF",
+                                          "fields": {
+                                            "ANIMATION_NAME": "Idle"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "when_action_event",
+        "id": "sF[gBaw{F]AL}d[10%v9",
+        "x": 10,
+        "y": 1674,
+        "extraState": "<mutation xmlns=\"http://www.w3.org/1999/xhtml\" inline=\"false\"></mutation>",
+        "fields": {
+          "ACTION": "FORWARD",
+          "EVENT": "pressed"
+        },
+        "inputs": {
+          "DO": {
+            "block": {
+              "type": "print_text",
+              "id": "P_]4:zu/4EKnLXYQw||g",
+              "inputs": {
+                "TEXT": {
+                  "shadow": {
+                    "type": "text",
+                    "id": "x8+QYwIlE;f.hLFWtV~Y",
+                    "fields": {
+                      "TEXT": "Hey! I'm walking towards you!"
+                    }
+                  }
+                },
+                "DURATION": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "EV~7{BE2R=7WwM~On$.}",
+                    "fields": {
+                      "NUM": 2
+                    }
+                  }
+                },
+                "COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "v6;ZCRi,2g6]6Qe(i@gc",
+                    "fields": {
+                      "COLOR": "#000080"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "when_action_event",
+        "id": "$o`]:$#y*T;=/~X(gIZM",
+        "x": 10,
+        "y": 1858,
+        "extraState": "<mutation xmlns=\"http://www.w3.org/1999/xhtml\" inline=\"false\"></mutation>",
+        "fields": {
+          "ACTION": "BACKWARD",
+          "EVENT": "pressed"
+        },
+        "inputs": {
+          "DO": {
+            "block": {
+              "type": "print_text",
+              "id": "RgUMD#ZPe1F}+(Tdn+Y-",
+              "inputs": {
+                "TEXT": {
+                  "shadow": {
+                    "type": "text",
+                    "id": "uXszA2TrAyC/k=p,jaJ)",
+                    "fields": {
+                      "TEXT": "See you later, alligator!"
+                    }
+                  }
+                },
+                "DURATION": {
+                  "shadow": {
+                    "type": "math_number",
+                    "id": "8)wQD.Qu9uq#zry2@wR$",
+                    "fields": {
+                      "NUM": 2
+                    }
+                  }
+                },
+                "COLOR": {
+                  "shadow": {
+                    "type": "colour",
+                    "id": "s1!Y!S@)y23-wCuD)FSQ",
+                    "fields": {
+                      "COLOR": "#000080"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "player",
+      "id": "b*7H|s;OBc8_^v`1`cb3"
+    }
+  ]
+}
